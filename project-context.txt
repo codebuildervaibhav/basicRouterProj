@@ -1,0 +1,99 @@
+# Project Context Summary
+
+## Project Structure
+
+project/
+│
+├── models/
+│   ├── author.js         # Mongoose schema/model for authors
+│   └── book.js           # Mongoose schema/model for books
+│
+├── routes/
+│   ├── authors.js        # Express router for author-related routes
+│   ├── books.js          # Express router for book-related routes
+│   └── index.js          # Express router for home page
+│
+├── views/
+│   ├── index.ejs         # Home page view
+│   ├── authors/
+│   │   ├── index.ejs     # List/search authors
+│   │   ├── new.ejs       # Form to create a new author
+│   │   └── _form_fields.ejs # Partial for author form fields
+│   ├── layouts/
+│   │   └── layout.ejs    # Main layout template (includes header, error messages, body)
+│   └── partials/
+│       ├── header.ejs    # Header partial
+│       └── errorMessage.ejs # Error message partial
+│
+├── server.js             # Main Express app entry point
+├── package.json          # Project dependencies and scripts
+└── .env                  # Environment variables (e.g., MongoDB connection string)
+
+---
+
+## Main Models
+
+- models/author.js: Defines Author schema with a `name` field. Exports the Mongoose model.
+- models/book.js: Defines Book schema (fields depend on your app). Exports the Mongoose model.
+
+---
+
+## Main Routes
+
+- routes/index.js: Handles `/`, renders `views/index.ejs`.
+- routes/authors.js: Handles `/authors` routes:
+  - GET /authors: List/search authors, renders `authors/index.ejs`.
+  - GET /authors/new: Show form to create a new author, renders `authors/new.ejs`.
+  - POST /authors: Create a new author, saves to MongoDB, redirects or shows error.
+- routes/books.js: Handles `/books` routes (similar structure to authors).
+
+---
+
+## Views and Layouts
+
+- All views are rendered inside `views/layouts/layout.ejs` using EJS layouts.
+- Layout includes header and error message partials.
+- The main content is injected via `<%- body %>`.
+
+---
+
+## Workflow
+
+1. App starts with `server.js`:
+   - Loads environment variables.
+   - Connects to MongoDB using Mongoose.
+   - Sets up EJS as the view engine and uses `express-ejs-layouts`.
+   - Registers routes from `routes/index.js`, `routes/authors.js`, and `routes/books.js`.
+
+2. User visits `/`:
+   - `routes/index.js` renders the home page.
+
+3. User visits `/authors`:
+   - `routes/authors.js` fetches authors from MongoDB and renders the list/search page.
+
+4. User creates a new author:
+   - Form in `authors/new.ejs` posts to `/authors`.
+   - Route creates a new Author document and saves it.
+   - On success, redirects to `/authors`; on error, re-renders form with error message.
+
+5. Views are rendered inside the main layout:
+   - Header and error messages are included as partials.
+   - The layout provides consistent structure for all pages.
+
+---
+
+## Variables and Data Flow
+
+- Author model: Used in `authors.js` for CRUD operations.
+- Book model: Used in `books.js` for CRUD operations.
+- searchOptions: Used to filter authors in the list/search route.
+- errorMessage: Passed to views to display errors (rendered via `errorMessage.ejs`).
+
+---
+
+## Summary
+
+Your app is a basic Express/Mongoose CRUD application for managing authors and books, using EJS for templating and layouts.
+Routes are modular, models are separated, and views are organized for maintainability.
+
+You can use this file for your context documentation!

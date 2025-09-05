@@ -1,3 +1,4 @@
+
 # Project Context Summary
 
 ## Project Structure
@@ -10,7 +11,7 @@ project/
 │
 ├── routes/
 │   ├── authors.js        # Express router for author-related routes
-│   ├── books.js          # Express router for book-related routes
+│   ├── books.js          # Express router for book-related routes (handles image upload, uses multer, fs, path)
 │   └── index.js          # Express router for home page
 │
 ├── views/
@@ -19,11 +20,19 @@ project/
 │   │   ├── index.ejs     # List/search authors
 │   │   ├── new.ejs       # Form to create a new author
 │   │   └── _form_fields.ejs # Partial for author form fields
+│   ├── books/
+│   │   ├── index.ejs     # List/search books
+│   │   ├── new.ejs       # Form to create a new book
+│   │   └── _form_fields.ejs # Partial for book form fields (title, author select, publish date, etc.)
 │   ├── layouts/
 │   │   └── layout.ejs    # Main layout template (includes header, error messages, body)
 │   └── partials/
 │       ├── header.ejs    # Header partial
 │       └── errorMessage.ejs # Error message partial
+│
+├── public/
+│   └── uploads/
+│       └── bookCovers/   # Uploaded book cover images
 │
 ├── server.js             # Main Express app entry point
 ├── package.json          # Project dependencies and scripts
@@ -34,7 +43,7 @@ project/
 ## Main Models
 
 - models/author.js: Defines Author schema with a `name` field. Exports the Mongoose model.
-- models/book.js: Defines Book schema (fields depend on your app). Exports the Mongoose model.
+- models/book.js: Defines Book schema (title, description, publishDate, pageCount, coverImageName, author). Exports the Mongoose model and coverImageBasePath. Includes a virtual property for cover image path.
 
 ---
 
@@ -45,7 +54,11 @@ project/
   - GET /authors: List/search authors, renders `authors/index.ejs`.
   - GET /authors/new: Show form to create a new author, renders `authors/new.ejs`.
   - POST /authors: Create a new author, saves to MongoDB, redirects or shows error.
-- routes/books.js: Handles `/books` routes (similar structure to authors).
+- routes/books.js: Handles `/books` routes:
+  - GET /books: List/search books, renders `books/index.ejs`.
+  - GET /books/new: Show form to create a new book, renders `books/new.ejs`.
+  - POST /books: Create a new book, saves to MongoDB, handles image upload, redirects or shows error.
+  - Helper functions: `renderNewPage`, `removeBookCover`.
 
 ---
 
@@ -54,6 +67,7 @@ project/
 - All views are rendered inside `views/layouts/layout.ejs` using EJS layouts.
 - Layout includes header and error message partials.
 - The main content is injected via `<%- body %>`.
+- Form partials (`_form_fields.ejs`) are used for both authors and books to keep forms DRY and maintainable.
 
 ---
 
@@ -76,7 +90,15 @@ project/
    - Route creates a new Author document and saves it.
    - On success, redirects to `/authors`; on error, re-renders form with error message.
 
-5. Views are rendered inside the main layout:
+5. User visits `/books`:
+   - `routes/books.js` fetches books from MongoDB and renders the list/search page.
+
+6. User creates a new book:
+   - Form in `books/new.ejs` posts to `/books`.
+   - Route creates a new Book document, handles image upload, saves it.
+   - On success, redirects to `/books`; on error, removes uploaded image and re-renders form with error message.
+
+7. Views are rendered inside the main layout:
    - Header and error messages are included as partials.
    - The layout provides consistent structure for all pages.
 
@@ -88,6 +110,8 @@ project/
 - Book model: Used in `books.js` for CRUD operations.
 - searchOptions: Used to filter authors in the list/search route.
 - errorMessage: Passed to views to display errors (rendered via `errorMessage.ejs`).
+- coverImageBasePath: Used for storing and referencing uploaded book cover images.
+- Multer: Used for handling file uploads in `books.js`.
 
 ---
 
@@ -95,5 +119,7 @@ project/
 
 Your app is a basic Express/Mongoose CRUD application for managing authors and books, using EJS for templating and layouts.
 Routes are modular, models are separated, and views are organized for maintainability.
+Image upload for book covers is handled via Multer and stored in `public/uploads/bookCovers`.
+Form partials and layout partials help keep your code DRY and organized.
 
 You can use this file for your context documentation!

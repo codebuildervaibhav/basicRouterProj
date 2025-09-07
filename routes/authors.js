@@ -42,4 +42,21 @@ router.post('/', async (req, res) => {
     }
 })
 
+router.get('/:id', async (req, res) => {
+  res.send('Show author ' + req.params.id)
+
+})
+router.get('/:id/edit', async (req, res) => {
+    res.send('Edit author ' + req.params.id)
+})
+
+router.put('/:id', async (req, res) => {
+    res.send('Update author ' + req.params.id)
+})
+
+router.delete('/:id', async (req, res) => {
+    res.send('Delete author ' + req.params.id)
+})
+
+
 module.exports = router
